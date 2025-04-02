@@ -98,10 +98,10 @@ def post_share(request, post_id):
             )
             
             # Создаем тему письма
-            subject = f"{cd['name']} ({cd['email']}) recommends you read {post.title}"
+            subject = f"{cd['name']} ({cd['email']}) рекомендует Вам для ознакомления {post.title}"
             
             # Формируем тело письма
-            message = f"Read {post.title} at {post_url}\n\n{cd['comments']}"
+            message = f"Ознакомьтесь {post.title} at {post_url}\n\n{cd['comments']}"
             
             # Отправляем email (реальная отправка требует настроек SMTP)
             send_mail(

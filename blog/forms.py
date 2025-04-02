@@ -12,7 +12,7 @@ class EmailPostForm(forms.Form):
     name = forms.CharField(
         max_length=25,  # Максимальная длина 25 символов
         # Необязательные параметры, которые можно добавить:
-        # label='Ваше имя',  # Подпись поля
+        label='Ваше имя',  # Подпись поля
         # widget=forms.TextInput(attrs={'class': 'form-control'})  # HTML-атрибуты
     )
     
@@ -20,13 +20,13 @@ class EmailPostForm(forms.Form):
     email = forms.EmailField(
         # Автоматически проверяет валидность email-адреса
         # Дополнительные параметры:
-        # label='Ваш email',
+        label='Ваш email',
         # help_text='Мы никому не передадим ваш email'
     )
     
     # Поле для email получателя
     to = forms.EmailField(
-        label='Кому',  # Кастомная метка поля
+        label='Электронная почта получателя',  # Кастомная метка поля
         # Можно добавить валидаторы:
         # validators=[validate_email_domain]  # Проверка домена получателя
     )
@@ -36,7 +36,7 @@ class EmailPostForm(forms.Form):
         required=False,  # Поле не обязательно для заполнения
         widget=forms.Textarea,  # Используем textarea вместо input
         # Дополнительные параметры:
-        # label='Комментарий (необязательно)',
+        label='Комментарий (необязательно)',
         # attrs={'rows': 4, 'placeholder': 'Ваш комментарий...'}
     )
     
