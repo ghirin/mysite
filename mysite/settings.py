@@ -13,6 +13,17 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from decouple import config
 # Email server configuration
+# Example of sending email with Django:
+# from django.core.mail import send_mail
+#     send_mail('Django mail',
+#     'This e-mail was sent with Django.',
+#     'yury.ghirin@gmail.com',
+#     ['yury.ghirin@gmail.com'],
+#     fail_silently=False)
+# By using this setting, Django will output all emails to the shell instead of sending them. This is very
+# useful for testing your application without an SMTP server.
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')

@@ -1,56 +1,116 @@
-from django.conf import settings
-from django.db import models
-from django.utils import timezone
-from django.urls import reverse
+# Импорт необходимых модулей Django
+from django.conf import settings  # Доступ к настройкам проекта
+from django.db import models  # Базовые классы для моделей
+from django.utils import timezone  # Утилиты для работы с датой/временем
+from django.urls import reverse  # Генерация URL по имени маршрута
 
-
+# Кастомный менеджер для опубликованных постов
 class PublishedManager(models.Manager):
     def get_queryset(self):
+        """Переопределяет стандартный queryset, фильтруя только опубликованные посты"""
         return (
-            super().get_queryset().filter(status=Post.Status.PUBLISHED)
+            super().get_queryset()  # Базовый queryset
+            .filter(status=Post.Status.PUBLISHED)  # Фильтр по статусу
         )
-
-
+# Модель поста блога
 class Post(models.Model):
+    # Класс для определения вариантов статуса поста
     class Status(models.TextChoices):
-        DRAFT = 'DF', 'Draft'
-        PUBLISHED = 'PB', 'Published'
+        DRAFT = 'DF', 'Draft'  # Черновик (код, человекочитаемое имя)
+        PUBLISHED = 'PB', 'Published'  # Опубликован
 
-    title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250, unique_for_date='publish')
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='blog_posts'
+    # Поля модели:
+    title = models.CharField(max_length=250)  # Заголовок (макс. длина 250)
+    slug = models.SlugField(
+        max_length=250, 
+        unique_for_date='publish'  # Уникальность вместе с датой публикации
     )
-    body = models.TextField()
-    publish = models.DateTimeField(default=timezone.now)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Ссылка на модель пользователя из настроек
+        on_delete=models.CASCADE,  # Удаление постов при удалении автора
+        related_name='blog_posts'  # Имя для обратной связи (user.blog_posts.all())
+    )
+    body = models.TextField()  # Основное содержимое поста
+    publish = models.DateTimeField(
+        default=timezone.now  # Дата публикации (по умолчанию сейчас)
+    )
+    created = models.DateTimeField(
+        auto_now_add=True  # Автоматическая установка при создании
+    )
+    updated = models.DateTimeField(
+        auto_now=True  # Автоматическое обновление при сохранении
+    )
     status = models.CharField(
         max_length=2,
-        choices=Status,
-        default=Status.DRAFT
+        choices=Status.choices,  # Ограниченные варианты из класса Status
+        default=Status.DRAFT  # Значение по умолчанию
     )
 
-    objects = models.Manager()  # The default manager.
-    published = PublishedManager()  # Our custom manager.
+    # Менеджеры модели:
+    objects = models.Manager()  # Стандартный менеджер (все записи)
+    published = PublishedManager()  # Кастомный менеджер (только опубликованные)
 
+    # Метаданные модели
     class Meta:
-        ordering = ['-publish']
+        ordering = ['-publish']  # Сортировка по убыванию даты публикации
         indexes = [
-            models.Index(fields=['-publish']),
+            models.Index(fields=['-publish']),  # Индекс для оптимизации запросов
         ]
 
     def __str__(self):
+        """Строковое представление объекта (админка, shell)"""
         return self.title
 
     def get_absolute_url(self):
+        """Генерирует канонический URL для поста"""
         return reverse(
-            'blog:post_detail', 
-             args=[self.publish.year,
-                   self.publish.month,
-                   self.publish.day,
-                   self.slug
-                   ]
+            'blog:post_detail',  # Имя маршрута с namespace
+            args=[
+                self.publish.year,  # Год из даты публикации
+                self.publish.month,  # Месяц
+                self.publish.day,  # День
+                self.slug  # Уникальный идентификатор
+            ]
         )
+#Ключевые особенности:
+# Кастомный менеджер PublishedManager:
+
+# Наследуется от models.Manager
+
+# Фильтрует только посты со статусом PUBLISHED
+
+# Используется как Post.published.all() вместо стандартного Post.objects.all()
+
+# Поля модели:
+
+# unique_for_date='publish' - гарантирует уникальность slug в пределах одной даты
+
+# auto_now_add/auto_now - автоматическое управление датами
+
+# ForeignKey с related_name - доступ к постам автора через user.blog_posts
+
+# TextChoices для статуса:
+
+# Современный способ (Django 3.0+) определения вариантов выбора
+
+# Доступ через Post.Status.PUBLISHED и Post.Status.choices
+
+# Оптимизации:
+
+# Индекс по полю publish ускоряет сортировку и фильтрацию
+
+# Правильный порядок сортировки в class Meta
+
+# get_absolute_url():
+
+# Реализует "канонический URL" для объекта
+
+# Использует reverse() вместо жестко заданных URL
+
+# Важно для SEO и правильных ссылок в админке
+
+# Два менеджера:
+
+# objects - стандартный (все записи, включая черновики)
+
+# published - только опубликованные посты (использует кастомный менеджер)

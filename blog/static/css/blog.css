@@ -1,97 +1,174 @@
-body { 
-    margin:0;
-    padding:0;
-    font-family:helvetica, sans-serif; 
+/* ===== БАЗОВЫЕ СТИЛИ СТРАНИЦЫ ===== */
+/* Сброс стандартных отступов браузера для всего документа */
+body {
+    margin: 0;          /* Убираем внешние отступы */
+    padding: 0;         /* Убираем внутренние отступы */
+    font-family: helvetica, sans-serif; /* Основной шрифт с fallback на sans-serif */
 }
 
-a { 
-    color:#00abff;
-    text-decoration:none; 
+/* ===== ССЫЛКИ ===== */
+a {
+    color: #00abff;     /* Голубой цвет для ссылок */
+    text-decoration: none; /* Убираем подчеркивание */
 }
 
-h1 { 
-    font-weight:normal;
-    border-bottom:1px solid #bbb;
-    padding:0 0 10px 0;
+/* ===== ЗАГОЛОВКИ ===== */
+h1 {
+    font-weight: normal;    /* Отключаем жирное начертание */
+    border-bottom: 1px solid #bbb; /* Серая линия под заголовком */
+    padding: 0 0 10px 0;   /* Отступ снизу для линии */
 }
 
 h2 {
-    font-weight:normal;
-    margin:30px 0 0;
+    font-weight: normal;    /* Отключаем жирное начертание */
+    margin: 30px 0 0;      /* Большой отступ сверху */
 }
 
-#content { 
-    float:left;
-    width:60%;
-    padding:0 0 0 30px; 
+/* ===== ОСНОВНАЯ СТРУКТУРА СТРАНИЦЫ ===== */
+#content {
+    float: left;        /* Выравнивание по левому краю */
+    width: 60%;         /* Ширина 60% от родителя */
+    padding: 0 0 0 30px; /* Отступ слева */
 }
 
-#sidebar { 
-    float:right;
-    width:30%;
-    padding:10px;
-    background:#efefef; 
-    height:100%;
+#sidebar {
+    float: right;       /* Выравнивание по правому краю */
+    width: 30%;         /* Ширина 30% от родителя */
+    padding: 10px;      /* Внутренние отступы */
+    background: #efefef; /* Светло-серый фон */
+    height: 100%;       /* Высота на всю доступную высоту */
 }
 
-p.date { 
-    color:#ccc;
-    font-family: georgia, serif;
-    font-size: 12px;
-    font-style: italic; 
+/* ===== СПЕЦИАЛЬНЫЕ КЛАССЫ ===== */
+/* Стиль для даты */
+p.date {
+    color: #ccc;                /* Светло-серый цвет */
+    font-family: georgia, serif; /* Шрифт с засечками */
+    font-size: 12px;            /* Мелкий размер */
+    font-style: italic;         /* Курсивное начертание */
 }
 
+/* Класс для выравнивания по левому краю */
 .left {
-    float:left;
-    margin-right:10px;
+    float: left;        /* Выравнивание по левому краю */
+    margin-right: 10px; /* Отступ справа */
 }
 
-/* pagination */
-.pagination { 
-    margin:40px 0; 
-    font-weight:bold;
+/* ===== ПАГИНАЦИЯ ===== */
+.pagination {
+    margin: 40px 0;     /* Большие вертикальные отступы */
+    font-weight: bold;  /* Жирное начертание */
 }
 
-/* forms */
-label { 
-    float:left;
-    clear:both;
-    color:#333;
-    margin-bottom:4px; 
+/* ===== ФОРМЫ ===== */
+label {
+    float: left;        /* Выравнивание по левому краю */
+    clear: both;        /* Запрет обтекания */
+    color: #333;        /* Темно-серый цвет */
+    margin-bottom: 4px; /* Небольшой отступ снизу */
 }
-input, textarea { 
-    clear:both;
-    float:left;
-    margin:0 0 10px;
-    background:#ededed;
-    border:0;
-    padding:6px 10px;
-    font-size:12px;
+
+/* Общие стили для полей ввода */
+input, textarea {
+    clear: both;        /* Запрет обтекания */
+    float: left;        /* Выравнивание по левому краю */
+    margin: 0 0 10px;   /* Отступ снизу */
+    background: #ededed; /* Светло-серый фон */
+    border: 0;          /* Убираем границу */
+    padding: 6px 10px;  /* Внутренние отступы */
+    font-size: 12px;    /* Размер текста */
 }
+
+/* Стиль для кнопки отправки */
 input[type=submit] {
-    font-weight:bold;
-    background:#00abff;
-    color:#fff;
-    padding:10px 20px;
-    font-size:14px;
-    text-transform:uppercase; 
-}
-.errorlist { 
-    color:#cc0033;
-    float:left;
-    clear:both;
-    padding-left:10px; 
+    font-weight: bold;      /* Жирное начертание */
+    background: #00abff;    /* Голубой фон */
+    color: #fff;            /* Белый текст */
+    padding: 10px 20px;     /* Большие отступы */
+    font-size: 14px;        /* Увеличенный размер */
+    text-transform: uppercase; /* Все буквы заглавные */
 }
 
-/* comments */
+/* Стиль для списка ошибок */
+.errorlist {
+    color: #cc0033;     /* Красный цвет для ошибок */
+    float: left;        /* Выравнивание по левому краю */
+    clear: both;        /* Запрет обтекания */
+    padding-left: 10px; /* Отступ слева */
+}
+
+/* ===== КОММЕНТАРИИ ===== */
 .comment {
-    padding:10px;
+    padding: 10px;      /* Внутренние отступы */
 }
+
+/* Зебра для комментариев */
 .comment:nth-child(even) {
-    background:#efefef;
+    background: #efefef; /* Светло-серый фон для четных */
 }
+
+/* Стиль для мета-информации комментария */
 .comment .info {
-    font-weight:bold;
-    font-size:12px;
-    color:#666;
+    font-weight: bold;  /* Жирное начертание */
+    font-size: 12px;    /* Мелкий размер */
+    color: #666;        /* Серый цвет */
 }
+
+/*
+Ключевые особенности стилей:
+Сброс стилей: Удаление стандартных отступов body для кросс-браузерности.
+
+Типографика:
+
+Использование системы fallback-шрифтов
+
+Настройка заголовков без жирного начертания
+
+Специальные стили для дат
+
+Макет страницы:
+
+Двухколоночный layout (60%/30%)
+
+Float-based выравнивание
+
+Разные фоны для боковой панели
+
+Формы:
+
+Стилизация всех элементов форм
+
+Особый дизайн для кнопки submit
+
+Визуальное выделение ошибок
+
+Комментарии:
+
+Зебро-стиль через :nth-child(even)
+
+Четкое разделение мета-информации
+
+Псевдоклассы:
+
+Использование :nth-child для чередования стилей
+
+Специфичный выбор input[type=submit]
+
+Цветовая схема:
+
+Основной акцентный цвет: #00abff (голубой)
+
+Нейтральные фоны: #efefef, #ededed
+
+Цвета текста: #333 (основной), #666 (второстепенный), #ccc (третичный)
+
+Для дальнейшей оптимизации можно рассмотреть:
+
+Добавление медиа-запросов для адаптивности
+
+Использование CSS-переменных для цветов
+
+Замену float на flexbox/grid для современного layout
+
+Добавление transition для интерактивных элементов
+*/

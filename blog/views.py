@@ -1,23 +1,40 @@
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.shortcuts import get_object_or_404, render
-from .models import Post
-from django.views.generic import ListView
-from .forms import EmailPostForm
-
+# Импорт необходимых модулей Django
+from django.core.paginator import (
+    EmptyPage,       # Исключение для пустой страницы
+    PageNotAnInteger, # Исключение для нечисловой страницы
+    Paginator        # Основной класс пагинации
+)
+from django.shortcuts import (
+    get_object_or_404,  # Получение объекта или 404
+    render              # Рендеринг шаблонов
+)
+from .models import Post  # Импорт модели Post из текущего приложения
+from django.views.generic import ListView  # Класс для списковых представлений
+from .forms import EmailPostForm  # Форма для отправки поста по email
+from django.core.mail import send_mail  # Функция отправки email
 
 def post_list(request):
+    """Функциональное представление списка опубликованных постов с пагинацией"""
+    # Получаем все опубликованные посты через кастомный менеджер
     post_list = Post.published.all()
-    # Pagination with 3 posts per page
-    paginator = Paginator(post_list, 3)  # Show 3 posts per page.
+    
+    # Настройка пагинации - 3 поста на страницу
+    paginator = Paginator(post_list, 3)
+    
+    # Получаем номер страницы из GET-параметра 'page' (по умолчанию 1)
     page_number = request.GET.get('page', 1)
+    
     try:
+        # Пытаемся получить запрошенную страницу
         posts = paginator.get_page(page_number)
     except PageNotAnInteger:
-        # If page_number is not an integer, deliver first page.
+        # Если page не число - показываем первую страницу
         posts = paginator.get_page(1)
     except EmptyPage:
-        # If page_number is out of range get last page of results
+        # Если страница вне диапазона - показываем последнюю
         posts = paginator.get_page(paginator.num_pages)
+    
+    # Рендерим шаблон с передачей постов в контекст
     return render(
         request,
         'blog/post/list.html',
@@ -25,6 +42,11 @@ def post_list(request):
     )
 
 def post_detail(request, year, month, day, post):
+    """Детальное представление поста с проверкой даты и статуса"""
+    # Получаем пост или 404, проверяя:
+    # - статус (только опубликованные)
+    # - slug поста
+    # - точное совпадение даты публикации
     post = get_object_or_404(
         Post,
         status=Post.Status.PUBLISHED,
@@ -33,6 +55,8 @@ def post_detail(request, year, month, day, post):
         publish__month=month,
         publish__day=day
     )
+    
+    # Рендерим шаблон детальной страницы
     return render(
         request,
         'blog/post/detail.html',
@@ -41,42 +65,112 @@ def post_detail(request, year, month, day, post):
 
 class PostListView(ListView):
     """
-    Alternative post list view
+    Альтернативное класс-базированное представление списка постов.
+    Наследует функциональность Django's ListView.
     """
-
-    queryset = Post.published.all()
-    context_object_name = 'posts'
-    paginate_by = 3
-    template_name = 'blog/post/list.html'
+    queryset = Post.published.all()  # Queryset всех опубликованных постов
+    context_object_name = 'posts'    # Имя переменной в контексте шаблона
+    paginate_by = 3                 # Количество постов на страницу
+    template_name = 'blog/post/list.html'  # Путь к шаблону
 
 def post_share(request, post_id):
-   # Retrieve post by id
-   post = get_object_or_404(
-       Post,
-       id=post_id,
-       status=Post.Status.PUBLISHED
-   )
-   if request.method == 'POST':
-       # Form was submitted
-       form = EmailPostForm(request.POST)
-       if form.is_valid():
-           # Form fields passed validation
-           cd = form.cleaned_data
-           # Send email
-           post.share(
-               cd['name'],
-               cd['email'],
-               cd['to'],
-               cd['comments']
-           )
-       else:
-           # Form was not valid
-           form = EmailPostForm()
-       return render(
-           request,
-           'blog/post/share.html',
-           {   
-               'post': post,
-               'form': form
-           }
-       ) 
+    """Обработчик отправки поста по email"""
+    # Получаем пост по ID, проверяя что он опубликован
+    post = get_object_or_404(
+        Post,
+        id=post_id,
+        status=Post.Status.PUBLISHED
+    )
+    
+    # Инициализируем флаг отправки
+    sent = False
+    
+    if request.method == 'POST':
+        # Если POST-запрос - обрабатываем форму
+        form = EmailPostForm(request.POST)
+        if form.is_valid():
+            # Если форма валидна - получаем очищенные данные
+            cd = form.cleaned_data
+            
+            # Формируем абсолютный URL поста
+            post_url = request.build_absolute_uri(
+                post.get_absolute_url()
+            )
+            
+            # Создаем тему письма
+            subject = f"{cd['name']} ({cd['email']}) recommends you read {post.title}"
+            
+            # Формируем тело письма
+            message = f"Read {post.title} at {post_url}\n\n{cd['comments']}"
+            
+            # Отправляем email (реальная отправка требует настроек SMTP)
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=None,  # Используется DEFAULT_FROM_EMAIL из settings
+                recipient_list=[cd['to']]
+            )
+            
+            # Устанавливаем флаг успешной отправки
+            sent = True
+    else:
+        # Для GET-запроса создаем пустую форму
+        form = EmailPostForm()
+    
+    # Рендерим шаблон с формой, постом и статусом отправки
+    return render(
+        request,
+        'blog/post/share.html',
+        {   
+            'post': post,
+            'form': form,
+            'sent': sent
+        }
+    )
+
+# Ключевые особенности:
+# Два подхода к списку постов:
+
+# Функциональный (post_list) с ручной обработкой пагинации
+
+# Класс-базированный (PostListView) с автоматической пагинацией
+
+# Безопасность в post_detail:
+
+# Проверка статуса публикации
+
+# Точное соответствие даты публикации
+
+# Защита от несуществующих постов (get_object_or_404)
+
+# Отправка email:
+
+# Использование Django форм (EmailPostForm)
+
+# Валидация данных формы
+
+# Формирование абсолютного URL (build_absolute_uri)
+
+# Настройка темы и тела письма
+
+# Интеграция с send_mail
+
+# Шаблоны:
+
+# Четкое разделение шаблонов по назначению (list/detail/share)
+
+# Единая структура папок (blog/post/)
+
+# Обработка ошибок:
+
+# Пагинация с обработкой неверных номеров страниц
+
+# 404 для несуществующих постов
+
+# Валидация формы перед отправкой
+
+# Разделение логики:
+
+# Получение данных отделено от рендеринга
+
+# Бизнес-логика (отправка email) отделена от представления
