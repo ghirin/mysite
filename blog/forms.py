@@ -1,6 +1,9 @@
 # Импорт модуля forms из Django для создания форм
 from django import forms
 
+# Импорт модели Comment из models.py
+from .models import Comment
+
 # Создание класса формы для отправки поста по email
 class EmailPostForm(forms.Form):
     """
@@ -47,60 +50,45 @@ class EmailPostForm(forms.Form):
     #         raise forms.ValidationError("Нельзя отправлять письмо самому себе")
     #     return cleaned_data
 
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('name', 'email', 'body')
+        labels = {
+            'name': 'Ваше имя',
+            'email': 'Ваш email',
+            'body': 'Ваш комментарий',
+        }
+
+
 # Ключевые особенности:
 # Базовые поля формы:
-
 # CharField - для текстовых данных
-
 # EmailField - с автоматической валидацией email-адреса
-
 # Параметр max_length ограничивает длину ввода
-
 # Необязательные поля:
-
 # required=False делает поле комментариев необязательным
-
 # По умолчанию все поля обязательные (required=True)
-
 # Виджеты (Widgets):
-
 # Textarea преобразует поле в <textarea> HTML-элемент
-
 # По умолчанию CharField использует <input type="text">
-
 # Расширенные возможности:
-
 # Кастомные метки (label)
-
 # Подсказки (help_text)
-
 # HTML-атрибуты через attrs
-
 # Валидаторы (validators)
-
 # Метод clean() для комплексной проверки данных
-
 # Безопасность:
-
 # Автоматическая экранирование HTML-тегов
-
 # Проверка CSRF при использовании в шаблонах
-
 # Валидация данных перед использованием
-
 # Использование в представлении:
-
 # form = EmailPostForm(request.POST or None)
 # if form.is_valid():
 #     # Обработка валидных данных
 #     cd = form.cleaned_data  # Доступ к очищенным данным
 # Эта форма обеспечивает:
-
 # Структурированный ввод данных
-
 # Встроенную валидацию
-
 # Гибкость настройки отображения
-
 # Безопасную обработку пользовательского ввода
-

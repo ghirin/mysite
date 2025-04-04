@@ -72,45 +72,48 @@ class Post(models.Model):
                 self.slug  # Уникальный идентификатор
             ]
         )
+# Модель комментариев блога
+class Comment(models.Model):
+    post = models.ForeignKey(
+        Post,  # Связь с моделью Post
+        on_delete=models.CASCADE,  # Удаление комментариев при удалении поста
+        related_name='comments'  # Имя для обратной связи (post.comments.all())
+    )
+    name = models.CharField(max_length=80)  # Имя комментатора
+    email = models.EmailField()  # Email комментатора
+    body = models.TextField()  # Текст комментария
+    created = models.DateTimeField(auto_now_add=True)  # Дата создания
+    updated = models.DateTimeField(auto_now=True)  # Дата обновления
+    active = models.BooleanField(default=True)  # Активность комментария
+
+    class Meta:
+        ordering = ['created']  # Сортировка по дате создания
+        indexes = [
+            models.Index(fields=['created']),  # Индекс для оптимизации
+        ]
+
+    def __str__(self):
+        """Строковое представление комментария"""
+        return f'Comment by {self.name} on {self.post}'
 #Ключевые особенности:
 # Кастомный менеджер PublishedManager:
-
 # Наследуется от models.Manager
-
 # Фильтрует только посты со статусом PUBLISHED
-
 # Используется как Post.published.all() вместо стандартного Post.objects.all()
-
 # Поля модели:
-
 # unique_for_date='publish' - гарантирует уникальность slug в пределах одной даты
-
 # auto_now_add/auto_now - автоматическое управление датами
-
 # ForeignKey с related_name - доступ к постам автора через user.blog_posts
-
 # TextChoices для статуса:
-
 # Современный способ (Django 3.0+) определения вариантов выбора
-
 # Доступ через Post.Status.PUBLISHED и Post.Status.choices
-
 # Оптимизации:
-
 # Индекс по полю publish ускоряет сортировку и фильтрацию
-
 # Правильный порядок сортировки в class Meta
-
 # get_absolute_url():
-
 # Реализует "канонический URL" для объекта
-
 # Использует reverse() вместо жестко заданных URL
-
 # Важно для SEO и правильных ссылок в админке
-
 # Два менеджера:
-
 # objects - стандартный (все записи, включая черновики)
-
 # published - только опубликованные посты (использует кастомный менеджер)

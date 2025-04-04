@@ -1,0 +1,32 @@
+<!-- filepath: c:\Users\ASU\Desktop\Django\Antonio Mele\blog\mysite\blog\templates\blog\post\comment_form.html -->
+{% extends "blog/base.html" %}
+
+{% block title %}Добавить комментарий{% endblock %}
+
+{% block content %}
+<!-- Заголовок формы для добавления нового комментария -->
+<h2>Добавить новый комментарий</h2>
+
+<!-- Форма для отправки комментария -->
+<form action="{% url "blog:post_comment" post.id %}" method="post">
+  
+  <!-- Поле для ввода имени пользователя -->
+  <div class="left">
+    {{ form.name.as_field_group }}
+  </div>
+  
+  <!-- Поле для ввода email пользователя -->
+  <div class="left">
+    {{ form.email.as_field_group }}
+  </div>
+  
+  <!-- Поле для ввода текста комментария -->
+  {{ form.body.as_field_group }}
+  
+  <!-- Токен защиты от CSRF-атак -->
+  {% csrf_token %}
+  
+  <!-- Кнопка для отправки формы -->
+  <p><input type="submit" value="Добавить комментарий"></p>
+</form>
+{% endblock %}

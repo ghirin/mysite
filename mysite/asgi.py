@@ -29,49 +29,29 @@ application = get_asgi_application()
 
 # Ключевые особенности:
 # Назначение файла:
-
 # Точка входа для ASGI-серверов
-
 # Используется для асинхронных серверов (вместо традиционных WSGI)
-
 # Обязателен для работы с WebSockets и async-функциями
-
 # Переменная окружения:
-
 # DJANGO_SETTINGS_MODULE должна указывать на Python-путь к вашему файлу настроек
-
 # Формат: 'имя_проекта.settings' (в данном случае 'mysite.settings')
-
 # ASGI vs WSGI:
-
 # # ASGI (асинхронный интерфейс)
 # from django.core.asgi import get_asgi_application
-
 # # WSGI (традиционный интерфейс)
 # from django.core.wsgi import get_wsgi_application
-
 # Использование:
-
 # Для запуска через Daphne: daphne mysite.asgi:application
-
 # Для запуска через Uvicorn: uvicorn mysite.asgi:application
-
 # Дополнительные возможности:
-
 # Можно добавлять middleware для ASGI
-
 # Поддержка WebSockets при правильной настройке
-
 # Интеграция с Channels для реального времени
-
 # Пример расширенной версии (с Channels):
-
 # import os
 # from django.core.asgi import get_asgi_application
 # from channels.routing import ProtocolTypeRouter
-
 # os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
-
 # application = ProtocolTypeRouter({
 #     "http": get_asgi_application(),
 #     # "websocket": AuthMiddlewareStack(
@@ -80,24 +60,14 @@ application = get_asgi_application()
 #     #     )
 #     # ),
 # })
-
 # Когда использовать:
 # Базовый вариант (как в примере):
-
 # Для обычных Django-проектов
-
 # При использовании ASGI-серверов
-
 # Расширенный вариант:
-
 # При работе с Django Channels
-
 # Для WebSocket-соединений
-
 # Для HTTP/2 и других современных протоколов
-
 # Не требуется:
-
 # При использовании традиционных WSGI-серверов (Gunicorn, uWSGI)
-
 # Для простых проектов без async-функций

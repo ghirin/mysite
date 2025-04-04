@@ -24,46 +24,26 @@ class BlogConfig(AppConfig):
     # def ready(self):
     #     # Импорт сигналов или выполнение инициализации
     #     import blog.signals
-
 # Ключевые особенности:
 # Назначение файла apps.py:
-
 # Содержит конфигурацию конкретного приложения
-
 # Определяется при создании приложения командой startapp
-
 # Регистрируется в INSTALLED_APPS (в settings.py) как 'blog.apps.BlogConfig'
-
 # default_auto_field:
-
 # Появился в Django 3.2+
-
 # Определяет тип поля для автоматически создаваемых первичных ключей
-
 # BigAutoField поддерживает большие числа (до 9,223,372,036,854,775,807)
-
 # Альтернативы: AutoField (32-битный) или кастомные поля
-
 # name:
-
 # Должен точно соответствовать имени пакета приложения
-
 # Используется Django для:
-
 # Поиска моделей (blog.models)
-
 # Поиска шаблонов (blog/templates/)
-
 # Разрешения имен URL (blog:url_name)
-
 # Дополнительные возможности:
-
 # verbose_name - для красивого отображения в админке
-
 # ready() - метод для инициализации (регистрация сигналов и т.д.)
-
 # label - альтернативное короткое имя (по умолчанию = name)
-
 # Пример расширенной конфигурации:
 # class BlogConfig(AppConfig):
 #     default_auto_field = 'django.db.models.BigAutoField'
@@ -77,11 +57,7 @@ class BlogConfig(AppConfig):
 #         from .checks import check_site_config
 #         from django.core.checks import register
 #         register(check_site_config)
-
 # Этот файл является ключевым для:
-
 # Правильной инициализации приложения
-
 # Интеграции приложения в проект Django
-
 # Контроля поведения связанных компонентов

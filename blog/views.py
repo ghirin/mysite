@@ -1,4 +1,5 @@
 # Импорт необходимых модулей Django
+from django.core.mail import send_mail  # Функция отправки email
 from django.core.paginator import (
     EmptyPage,       # Исключение для пустой страницы
     PageNotAnInteger, # Исключение для нечисловой страницы
@@ -8,10 +9,10 @@ from django.shortcuts import (
     get_object_or_404,  # Получение объекта или 404
     render              # Рендеринг шаблонов
 )
-from .models import Post  # Импорт модели Post из текущего приложения
+from django.views.decorators.http import require_POST  # Декоратор для POST-запросов
 from django.views.generic import ListView  # Класс для списковых представлений
-from .forms import EmailPostForm  # Форма для отправки поста по email
-from django.core.mail import send_mail  # Функция отправки email
+from .forms import CommentForm, EmailPostForm  # Форма для отправки поста по email и отправки комментария
+from .models import Post  # Импорт модели Post из текущего приложения
 
 def post_list(request):
     """Функциональное представление списка опубликованных постов с пагинацией"""
@@ -56,11 +57,21 @@ def post_detail(request, year, month, day, post):
         publish__day=day
     )
     
+    # Получаем все комментарии к посту
+    comments = post.comments.filter(active=True)  # Только активные комментарии Мы добавили QuerySet для извлечения всех активных комментариев к посту следующим образом.
+    # Инициализируем форму для комментариев
+    form = CommentForm()
+
     # Рендерим шаблон детальной страницы
     return render(
-        request,
-        'blog/post/detail.html',
-        {'post': post}
+        request, # Передаем объект запроса
+        'blog/post/detail.html', # Путь к шаблону
+        {
+          'post': post, # Передаем пост
+          'comments': comments, # Передаем комментарии
+          'form': form # Передаем комментарии и форму
+        } 
+        # Форма для отправки комментариев пользователем
     )
 
 class PostListView(ListView):
@@ -128,49 +139,55 @@ def post_share(request, post_id):
         }
     )
 
+@require_POST
+def post_comment(request, post_id):
+    """Обработчик отправки комментария к посту"""
+    # Получаем пост по ID
+    post = get_object_or_404(
+        Post, # Проверяем что пост существует
+        id=post_id, # ID поста из URL
+        status=Post.Status.PUBLISHED #
+    )
+    # Инициализируем форму с данными из POST-запроса
+    form = CommentForm(request.POST)
+    # Проверяем валидность формы
+    if form.is_valid():
+        # Если форма валидна - создаем новый комментарий
+        comment = form.save(commit=False)
+        comment.post = post  # Привязываем комментарий к посту
+        comment.save()
+        # Cохраняем комментарий в базе данных
+
+        # Редирект на страницу поста с добавленным комментарием
+        return render(
+            request,
+            'blog/post/comment.html',
+            {'post': post,
+             'form': form,
+             'comment': comment
+            }
+        )
 # Ключевые особенности:
 # Два подхода к списку постов:
-
 # Функциональный (post_list) с ручной обработкой пагинации
-
 # Класс-базированный (PostListView) с автоматической пагинацией
-
 # Безопасность в post_detail:
-
 # Проверка статуса публикации
-
 # Точное соответствие даты публикации
-
 # Защита от несуществующих постов (get_object_or_404)
-
 # Отправка email:
-
 # Использование Django форм (EmailPostForm)
-
 # Валидация данных формы
-
 # Формирование абсолютного URL (build_absolute_uri)
-
 # Настройка темы и тела письма
-
 # Интеграция с send_mail
-
 # Шаблоны:
-
 # Четкое разделение шаблонов по назначению (list/detail/share)
-
 # Единая структура папок (blog/post/)
-
 # Обработка ошибок:
-
 # Пагинация с обработкой неверных номеров страниц
-
 # 404 для несуществующих постов
-
 # Валидация формы перед отправкой
-
 # Разделение логики:
-
 # Получение данных отделено от рендеринга
-
 # Бизнес-логика (отправка email) отделена от представления
