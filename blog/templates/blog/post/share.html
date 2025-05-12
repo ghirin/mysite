@@ -1,0 +1,21 @@
+{% extends "blog/base.html" %}
+
+{% block content %}
+  {% if sent %}
+    <h1>Электронное письмо успешно отправлено</h1>
+    <p>
+        "{{post.title}}" было успешно отправлен {{ form.cleaned_data.to }}.
+    </p>
+  {% else %}
+    <h1>Поделиться постом "{{ post.title }}" по электронной почте</h1>
+    <form method="post" >
+        {% csrf_token %}
+        {{ form.as_p }}
+        <!-- We have included the form instance with {{ form.as_p }}. We tell Django to render the form fields
+        using HTML paragraph <p> elements by using the as_p method. We could also render the form as an
+        unordered list with as_ul or as an HTML table with as_table. -->
+
+        <input type="submit" value="Отправить e-mail" />
+    </form>
+    {% endif %}
+{% endblock %}
