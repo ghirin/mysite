@@ -4,6 +4,9 @@ from django.urls import path
 # Импорт модуля views из текущего пакета (директории) - содержит обработчики запросов
 from . import views
 
+from .feeds import LatestPostsFeed
+# Импорт класса LatestPostsFeed из модуля feeds - для RSS-ленты последних постов
+
 # Определение пространства имен приложения 'blog' для уникальной идентификации URL
 # Позволяет различать URL разных приложений с одинаковыми именами маршрутов
 app_name = 'blog'
@@ -20,7 +23,7 @@ urlpatterns = [
     # name='post_list' позволяет ссылаться на этот URL в шаблонах
     
     path(
-    'tag/<slug:tag_slug>/', views.post_list, name='post_list_by_tag'
+        'tag/<slug:tag_slug>/', views.post_list, name='post_list_by_tag'
     ),
 
     # Маршрут для отображения списка постов
@@ -56,6 +59,14 @@ urlpatterns = [
         'post/<int:post_id>/comment/',  # Параметр post_id - ID поста
         views.post_comment,             # Обработчик - функция post_comment из views.py
         name='post_comment'             # Имя маршрута для использования в шаблонах
+    ),
+
+    # Маршрут для отображения RSS-ленты последних постов:
+    # Пример URL: /blog/feed/
+    path(
+        'feed/', # URL для доступа к RSS-ленте
+        LatestPostsFeed(),  # Обработчик - экземпляр класса LatestPostsFeed
+        name='post_feed'    # Имя маршрута для использования в шаблонах
     ),
 ]
 

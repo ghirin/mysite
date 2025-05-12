@@ -1,14 +1,25 @@
 # Импорт необходимых модулей Django
 from django.contrib import admin  # Модуль административной панели
+from django.contrib.sitemaps.views import sitemap  # Модуль для работы с картами сайта
 from django.urls import include, path  # Функции для работы с URL-маршрутами
+from blog.sitemaps import PostSitemap  # Импорт класса карты сайта для постов
 from blog import views  # Импорт views из приложения blog
 
+sitemaps = {
+    'posts': PostSitemap,  # Определение карты сайта для постов
+}
 # Основной список URL-маршрутов проекта
 urlpatterns = [
     # Маршрут к административной панели Django
     # Доступен по URL: /admin/
     path('admin/', admin.site.urls),
     path('', views.post_list, name='post_list'),  # Главная страница сайта
+    path('sitemap.xml',  # URL для карты сайта
+        sitemap,  # Функция для генерации карты сайта
+        {'sitemaps': sitemaps},  # Передача параметров в функцию
+        name='django.contrib.sitemaps.views.sitemap'  # Имя маршрута
+    ),
+
     # Подключение URL-маршрутов из приложения blog
     # Доступны по URL: /blog/
     # Используется функция include() для включения маршрутов из blog.urls

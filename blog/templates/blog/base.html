@@ -1,5 +1,6 @@
 {% load blog_tags %}
 {% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,6 +17,9 @@
     <p>Это мой блог<br>
       Я написал {% total_posts %} публикаций.
     </p>
+<p>
+    <a href="{% url "blog:post_feed" %}">RSS - Вы можете подписаться на RSS-ленту</a>
+</p>    
     <h3>Последние публикации</h3>
     {% show_latest_posts 5 %}
     <h3>Наиболее комментируемые публикации</h3>
