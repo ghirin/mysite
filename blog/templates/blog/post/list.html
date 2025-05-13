@@ -4,7 +4,7 @@
 {% block title %}Мой блог{% endblock %}
 
 {% block content %}
-  <h1><a href="http://127.0.0.1:8000/">Мой блог</a></h1>
+  <h1 style="text-align: center;"><a href="http://127.0.0.1:8000/">Мой блог</a></h1>
   {% for post in posts %}
   {% if tag %}
   <h2>Posts tagged with "{{ tag.name }}"</h2>
