@@ -60,6 +60,12 @@ class CommentForm(forms.ModelForm):
             'body': 'Ваш комментарий',
         }
 
+class SearchForm(forms.Form):
+    query = forms.CharField(
+        label='Поиск',
+        max_length=100,
+        widget=forms.TextInput(attrs={'placeholder': 'Введите текст для поиска'})
+    )
 
 # Ключевые особенности:
 # Базовые поля формы:

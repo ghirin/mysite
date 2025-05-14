@@ -68,6 +68,12 @@ urlpatterns = [
         LatestPostsFeed(),  # Обработчик - экземпляр класса LatestPostsFeed
         name='post_feed'    # Имя маршрута для использования в шаблонах
     ),
+
+    path('search/', views.post_search, name='post_search'),  # Поиск постов
+    # URL для поиска постов
+    # Пример URL: /blog/search/?q=django
+    # Обработчик - функция post_search из views.py
+    # name='post_search' позволяет ссылаться на этот URL в шаблонах
 ]
 
 # Ключевые особенности:

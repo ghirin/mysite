@@ -11,10 +11,17 @@ from django.shortcuts import (
 )
 from django.views.decorators.http import require_POST  # Декоратор для POST-запросов
 from django.views.generic import ListView  # Класс для списковых представлений
-from .forms import CommentForm, EmailPostForm  # Форма для отправки поста по email и отправки комментария
+from django.contrib.postgres.search import SearchVector  # Импорт векторов поиска
+from .forms import CommentForm, EmailPostForm, SearchForm  # Импорт форм
 from .models import Post  # Импорт модели Post из текущего приложения
 from taggit.models import Tag  # Импорт модели Tag из приложения taggit
 from django.db.models import Count  # Импорт функции Count для подсчета тегов
+from django.contrib.postgres.search import (
+ SearchVector,
+ SearchQuery,
+ SearchRank
+)
+from django.contrib.postgres.search import TrigramSimilarity
 
 def post_list(request, tag_slug=None):
     """Функциональное представление списка опубликованных постов с пагинацией"""
@@ -187,6 +194,49 @@ def post_comment(request, post_id):
              'comment': comment
             }
         )
+
+def post_search(request):
+    form = SearchForm()  # Инициализируем форму поиска
+    query = None  # Инициализируем переменную для запроса
+    results = []  # Инициализируем список результатов
+
+    if 'query' in request.GET:  # Проверяем наличие параметра 'query' в GET-запросе
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            search_vector = SearchVector(
+                'title', weight='A'
+            ) + SearchVector('body', weight='B', config='russian')  # Создаем вектор поиска по заголовку и содержимому
+            # Создаем запрос поиска
+            # Используем SearchQuery для создания запроса
+            search_query = SearchQuery(query, config='russian')
+            
+            # Выполняем поиск по заголовкам и содержимому постов
+            results = (
+                Post.published.annotate(
+                    similarity=TrigramSimilarity('title', query),
+
+                )    
+                .filter(similarity__gt=0.1)  # Фильтруем результаты по подобности
+                .order_by('-similarity')
+                ) # Сортируем по убыванию ранга
+
+    return render(
+        request,
+        'blog/post/search.html',
+        {
+            'form': form,  # Передаем форму поиска
+            'query': query,  # Передаем запрос
+            'results': results  # Передаем результаты поиска}
+        }
+    )
+
+
+
+
+
+
+
 # Ключевые особенности:
 # Два подхода к списку постов:
 # Функциональный (post_list) с ручной обработкой пагинации
